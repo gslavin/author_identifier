@@ -38,10 +38,8 @@ fn compare_word_chains(a: &WordChain, b: &WordChain) -> f64 {
     let mut result = 0.0;
     let keys_a: HashSet<_> = a.keys().cloned().collect();
     let keys_b: HashSet<_> = b.keys().cloned().collect();
-    // for intersection of keys compare sets
-    //
-    //
 
+    // for intersection of keys compare sets
     let intersection: HashSet<_> =
         keys_a.intersection(&keys_b).cloned().collect();
     for key in &intersection {
@@ -52,7 +50,7 @@ fn compare_word_chains(a: &WordChain, b: &WordChain) -> f64 {
         result += intersection_size / (values_a.len() as f64);
     }
 
-    result = result/(intersection.len() as f64);
+    result = result / (intersection.len() as f64);
     if result.is_nan() {
         result = 0.0;
     }
@@ -71,14 +69,12 @@ fn main() {
 
 	let f = File::open("pg5200.txt").unwrap();
 	let mut f = BufReader::new(f);
-
     let mut text = String::new();
     f.read_to_string(&mut text).expect("Error reading file");
     let word_chain = create_word_chain(text);
 
 	let f = File::open("snippet.txt").unwrap();
 	let mut f = BufReader::new(f);
-
     let mut text_2 = String::new();
     f.read_to_string(&mut text_2).expect("Error reading file");
     let word_chain_2 = create_word_chain(text_2);
