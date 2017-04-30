@@ -7,12 +7,24 @@ use std::cmp;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
+use std::fmt;
 
 // key words map to a word set
 type WordMap = HashMap<VecDeque<String>, HashSet<String>>;
 struct WordChain {
     key_length: usize,
     word_map: WordMap
+}
+
+impl fmt::Display for WordChain {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for (key_words, word_set) in &self.word_map {
+            if let Err(x) = write!(f, "{:?} -> {:?})\n", key_words, word_set) {
+                return Err(x);
+            }
+        }
+        return Ok(());
+    }
 }
 
 impl WordChain {
@@ -89,15 +101,7 @@ fn main() {
         word_chains.push(word_chain);
     }
 
-    /*
-    println!("max: {}",
-        word_chain.values().map(|x| x.len()).max().unwrap());
-
-    for (key_words, word_set) in &word_chain {
-        println!("{:?} -> {:?}", key_words, word_set);
-    }
-    */
-
+    println!("{}", word_chains[0]);
     let sim = word_chains[0].compare(&word_chains[1]).expect("Unable to compare word chains");
     println!("{}", sim);
 }
