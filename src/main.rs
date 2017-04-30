@@ -2,6 +2,7 @@ use std::io::BufReader;
 use std::io::prelude::*;
 use std::fs::File;
 use std::env;
+use std::cmp;
 
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -56,7 +57,8 @@ impl WordChain {
             let values_other: &HashSet<_> = other.word_map.get(&key).unwrap();
             let intersection_size =
                 (*values).intersection(values_other).count() as f64;
-            result += intersection_size / (values_other.len() as f64);
+            let max_size = cmp::max(values.len(), values_other.len());
+            result += intersection_size / (max_size as f64);
         }
 
         result = result / (intersection.len() as f64);
