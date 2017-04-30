@@ -76,18 +76,19 @@ fn main() {
         println!("{}", argument);
         //parse file file
     }
+    const KEY_LENGTH: usize = 2;
 
     let f = File::open("pg5200.txt").unwrap();
     let mut f = BufReader::new(f);
     let mut text = String::new();
     f.read_to_string(&mut text).expect("Error reading file");
-    let word_chain = WordChain::new(text, 3);
+    let word_chain = WordChain::new(text, KEY_LENGTH);
 
     let f = File::open("snippet.txt").unwrap();
     let mut f = BufReader::new(f);
     let mut text_2 = String::new();
     f.read_to_string(&mut text_2).expect("Error reading file");
-    let word_chain_2 = WordChain::new(text_2, 3);
+    let word_chain_2 = WordChain::new(text_2, KEY_LENGTH);
 
     /*
     println!("max: {}",
