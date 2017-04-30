@@ -68,29 +68,26 @@ impl WordChain {
 
         return Some(result);
     }
-
 }
 
 fn main() {
-
-    // Prints each argument on a separate line
-    for argument in env::args() {
-        println!("{}", argument);
-        //parse file file
+    let (size, _) = env::args().size_hint();
+    if size < 3 {
+        println!("author_identifier [text] [comparison text]");
+        return;
     }
     const KEY_LENGTH: usize = 2;
 
-    let f = File::open("pg5200.txt").unwrap();
-    let mut f = BufReader::new(f);
-    let mut text = String::new();
-    f.read_to_string(&mut text).expect("Error reading file");
-    let word_chain = WordChain::new(text, KEY_LENGTH);
+    let mut word_chains: Vec<WordChain> = Vec::new();
 
-    let f = File::open("snippet.txt").unwrap();
-    let mut f = BufReader::new(f);
-    let mut text_2 = String::new();
-    f.read_to_string(&mut text_2).expect("Error reading file");
-    let word_chain_2 = WordChain::new(text_2, KEY_LENGTH);
+    for path in env::args().skip(1) {
+        let f = File::open(path).unwrap();
+        let mut f = BufReader::new(f);
+        let mut text = String::new();
+        f.read_to_string(&mut text).expect("Error reading file");
+        let word_chain = WordChain::new(text, KEY_LENGTH);
+        word_chains.push(word_chain);
+    }
 
     /*
     println!("max: {}",
@@ -101,6 +98,6 @@ fn main() {
     }
     */
 
-    let sim = word_chain.compare(&word_chain_2).expect("Unable to compare word chains");
+    let sim = word_chains[0].compare(&word_chains[1]).expect("Unable to compare word chains");
     println!("{}", sim);
 }
