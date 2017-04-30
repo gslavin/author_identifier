@@ -10,10 +10,11 @@ use std::collections::VecDeque;
 // key words map to a word set
 type WordChain = HashMap<VecDeque<String>, HashSet<String>>;
 
-fn create_word_chain(text: String) -> WordChain {
+// convert a block of text into a frequency histogram
+fn create_word_chain(text: String, key_length: usize) -> WordChain {
     let mut text_iter = text.split_whitespace();
     let mut key_words: VecDeque<String> =
-        text_iter.by_ref().take(3).map(|s| s.to_string()).collect();
+        text_iter.by_ref().take(key_length).map(|s| s.to_string()).collect();
 
     let mut word_chain: WordChain = HashMap::new();
     for word in text_iter {
@@ -71,13 +72,13 @@ fn main() {
 	let mut f = BufReader::new(f);
     let mut text = String::new();
     f.read_to_string(&mut text).expect("Error reading file");
-    let word_chain = create_word_chain(text);
+    let word_chain = create_word_chain(text, 3);
 
 	let f = File::open("snippet.txt").unwrap();
 	let mut f = BufReader::new(f);
     let mut text_2 = String::new();
     f.read_to_string(&mut text_2).expect("Error reading file");
-    let word_chain_2 = create_word_chain(text_2);
+    let word_chain_2 = create_word_chain(text_2, 3);
 
     /*
     println!("max: {}",
