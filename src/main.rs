@@ -11,6 +11,7 @@ use std::fmt;
 
 // key words map to a word set
 type WordMap = HashMap<VecDeque<String>, HashSet<String>>;
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct WordChain {
     key_length: usize,
     word_map: WordMap
@@ -80,6 +81,17 @@ impl WordChain {
 
         return Some(result);
     }
+
+    fn merge(&self, other: &WordChain) -> WordChain {
+        let new_word_map: WordMap = self.word_map.clone().into_iter()
+            .chain((*other).word_map.clone())
+            .collect();
+        return WordChain{ key_length: self.key_length, word_map: new_word_map};
+    }
+
+    fn len(&self) -> usize {
+        return self.word_map.len();
+    }
 }
 
 fn main() {
@@ -104,4 +116,40 @@ fn main() {
     //println!("{}", word_chains[0]);
     let sim = word_chains[0].compare(&word_chains[1]).expect("Unable to compare word chains");
     println!("{}", sim);
+}
+
+
+#[test]
+fn word_chain_new() {
+    const KEY_LENGTH: usize = 2;
+    let text = String::from("This is a test");
+
+    let word_chain = WordChain::new(text, KEY_LENGTH);
+
+    assert_eq!(word_chain.len(), 2);
+}
+
+#[test]
+fn word_chain_compare() {
+    const KEY_LENGTH: usize = 2;
+    let text = String::from("This is a test");
+    let text_2 = String::from("No common words in text");
+
+    let word_chain = WordChain::new(text, KEY_LENGTH);
+    let word_chain_2 = WordChain::new(text_2, KEY_LENGTH);
+
+    assert_ne!(word_chain, word_chain_2);
+}
+
+#[test]
+fn word_chain_merge() {
+    const KEY_LENGTH: usize = 2;
+    let text = String::from("This is a test");
+    let text_2 = String::from("No common words in text");
+
+    let word_chain = WordChain::new(text, KEY_LENGTH);
+    let word_chain_2 = WordChain::new(text_2, KEY_LENGTH);
+    let new_word_chain = word_chain.merge(&word_chain_2);
+
+    assert_eq!(new_word_chain.len(), word_chain.len() + word_chain_2.len());
 }
