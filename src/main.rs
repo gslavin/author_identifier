@@ -65,6 +65,11 @@ impl WordChain {
         // for intersection of keys compare sets
         let intersection: HashSet<_> =
             keys.intersection(&keys_other).cloned().collect();
+
+        if intersection.is_empty() {
+            return Some(0.0);
+        }
+
         for key in &intersection {
             let values: &HashSet<_> = self.word_map.get(&key).unwrap();
             let values_other: &HashSet<_> = other.word_map.get(&key).unwrap();
@@ -75,9 +80,6 @@ impl WordChain {
         }
 
         result = result / (intersection.len() as f64);
-        if result.is_nan() {
-            result = 0.0;
-        }
 
         return Some(result);
     }
