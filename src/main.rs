@@ -85,9 +85,19 @@ impl WordChain {
     }
 
     fn merge(&self, other: &WordChain) -> WordChain {
-        let new_word_map: WordMap = self.word_map.clone().into_iter()
-            .chain((*other).word_map.clone())
-            .collect();
+        // creates a merged map from the two given references
+        let mut new_word_map = HashMap::new();
+        let word_maps = vec![&self.word_map, &other.word_map];
+
+        for word_map in word_maps {
+            for (key, value_set) in word_map.clone() {
+                let mut entry = new_word_map.entry(key).or_insert(HashSet::new());
+                for v in value_set.clone().into_iter() {
+                    (*entry).insert(v);
+                }
+            }
+        }
+
         return WordChain{ key_length: self.key_length, word_map: new_word_map};
     }
 
@@ -154,4 +164,23 @@ fn word_chain_merge() {
     let new_word_chain = word_chain.merge(&word_chain_2);
 
     assert_eq!(new_word_chain.len(), word_chain.len() + word_chain_2.len());
+}
+
+#[test]
+fn word_chain_merge_common() {
+    const KEY_LENGTH: usize = 2;
+    let text = String::from("This is a test");
+    let text_2 = String::from("This is the test");
+
+    let word_chain = WordChain::new(text, KEY_LENGTH);
+    let word_chain_2 = WordChain::new(text_2, KEY_LENGTH);
+    let new_word_chain = word_chain.merge(&word_chain_2);
+
+    let key_words: VecDeque<String> = vec![String::from("This"), String::from("is")].into_iter().collect();
+
+    let mut expected_word_set = HashSet::new();
+    expected_word_set.insert(String::from("a"));
+    expected_word_set.insert(String::from("the"));
+    let word_set = new_word_chain.word_map.get(&key_words).unwrap();
+    assert_eq!(expected_word_set, *word_set);
 }
