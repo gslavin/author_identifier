@@ -101,7 +101,7 @@ fn main() {
         word_chains.push(word_chain);
     }
 
-    println!("{}", word_chains[0]);
+    //println!("{}", word_chains[0]);
     let sim = word_chains[0].compare(&word_chains[1]).expect("Unable to compare word chains");
     println!("{}", sim);
 }
