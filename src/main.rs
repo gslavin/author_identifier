@@ -92,8 +92,8 @@ impl WordChain {
         for word_map in word_maps {
             for (key, value_set) in word_map.clone() {
                 let mut entry = new_word_map.entry(key).or_insert(HashSet::new());
-                for v in value_set.clone().into_iter() {
-                    (*entry).insert(v);
+                for v in value_set {
+                    entry.insert(v);
                 }
             }
         }
