@@ -3,14 +3,14 @@ use std::io::prelude::*;
 use std::fs::File;
 use std::env;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
 use std::fmt;
 use std::cmp;
 
 // key words map to a map of word counts
-type WordMap = HashMap<VecDeque<String>, HashMap<String, u64>>;
+type WordMap = BTreeMap<VecDeque<String>, BTreeMap<String, u64>>;
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct WordChain {
     key_length: usize,
@@ -35,9 +35,9 @@ impl WordChain {
         let mut key_words: VecDeque<String> =
             text_iter.by_ref().take(key_length).map(|s| s.to_string()).collect();
 
-        let mut word_map: WordMap = HashMap::new();
+        let mut word_map: WordMap = BTreeMap::new();
         for word in text_iter {
-            let mut word_count = word_map.entry(key_words.clone()).or_insert(HashMap::new());
+            let mut word_count = word_map.entry(key_words.clone()).or_insert(BTreeMap::new());
             (*(*word_count).entry(word.to_string()).or_insert(0)) += 1;
             key_words.pop_front();
             key_words.push_back(word.to_string());
@@ -66,8 +66,8 @@ impl WordChain {
         }
 
         for key in &intersection {
-            let word_counts: &HashMap<String, u64> = self.word_map.get(&key).unwrap();
-            let word_counts_other: &HashMap<String, u64> = other.word_map.get(&key).unwrap();
+            let word_counts: &BTreeMap<String, u64> = self.word_map.get(&key).unwrap();
+            let word_counts_other: &BTreeMap<String, u64> = other.word_map.get(&key).unwrap();
             let words: HashSet<_> = word_counts.keys().collect();
             let words_other: HashSet<_> = word_counts_other.keys().collect();
             let mut intersection_size = 0;
@@ -91,13 +91,13 @@ impl WordChain {
 
     fn merge(&self, other: &WordChain) -> WordChain {
         // Creates a merged map from the two given WordChain references
-        let mut new_word_map = HashMap::new();
+        let mut new_word_map = BTreeMap::new();
         let word_maps = vec![&self.word_map, &other.word_map];
 
         for word_map in word_maps {
             for (key, word_counts) in word_map.clone() {
                 let mut new_word_count =
-                    new_word_map.entry(key).or_insert(HashMap::new());
+                    new_word_map.entry(key).or_insert(BTreeMap::new());
                 for word in word_counts.keys() {
                    (*new_word_count.entry(word.clone()).or_insert(0)) +=
                        *word_counts.get(word).unwrap();
@@ -147,7 +147,7 @@ fn word_chain_new() {
 
     let key_words: VecDeque<String> = vec![String::from("This"), String::from("is")].into_iter().collect();
 
-    let expected_word_counts: HashMap<String, u64> = vec![(String::from("a"), 1)].into_iter().collect();
+    let expected_word_counts: BTreeMap<String, u64> = vec![(String::from("a"), 1)].into_iter().collect();
     let word_counts = word_chain.word_map.get(&key_words).unwrap();
     assert_eq!(expected_word_counts, *word_counts);
 }
@@ -161,7 +161,7 @@ fn word_chain_new_repeat_words() {
 
     let key_words: VecDeque<String> = vec![String::from("This"), String::from("is")].into_iter().collect();
 
-    let expected_word_counts: HashMap<String, u64> = vec![(String::from("a"), 2)].into_iter().collect();
+    let expected_word_counts: BTreeMap<String, u64> = vec![(String::from("a"), 2)].into_iter().collect();
     let word_counts = word_chain.word_map.get(&key_words).unwrap();
     assert_eq!(expected_word_counts, *word_counts);
 }
@@ -214,7 +214,7 @@ fn word_chain_merge_common() {
 
     let key_words: VecDeque<String> = vec![String::from("This"), String::from("is")].into_iter().collect();
 
-    let expected_word_counts: HashMap<String, u64> =
+    let expected_word_counts: BTreeMap<String, u64> =
         vec![(String::from("a"), 1), (String::from("the"), 1)].into_iter().collect();
     let word_counts = new_word_chain.word_map.get(&key_words).unwrap();
     assert_eq!(expected_word_counts, *word_counts);
