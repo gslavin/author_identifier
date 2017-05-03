@@ -146,7 +146,11 @@ fn word_chain_new() {
 
     let word_chain = WordChain::new(text, KEY_LENGTH);
 
-    assert_eq!(word_chain.len(), 2);
+    let key_words: VecDeque<String> = vec![String::from("This"), String::from("is")].into_iter().collect();
+
+    let expected_word_counts: HashMap<String, u64> = vec![(String::from("a"), 1)].into_iter().collect();
+    let word_counts = word_chain.word_map.get(&key_words).unwrap();
+    assert_eq!(expected_word_counts, *word_counts);
 }
 
 #[test]
