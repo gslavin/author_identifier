@@ -29,7 +29,7 @@ impl fmt::Display for WordChain {
 }
 
 impl WordChain {
-    // convert a block of text into a frequency histogram
+    // Convert a block of text into a frequency histogram
     fn new(text: String, key_length: usize) -> WordChain {
         let mut text_iter = text.split_whitespace();
         let mut key_words: VecDeque<String> =
@@ -48,7 +48,6 @@ impl WordChain {
 
     // Compare word chains
     // Gives a score between 0 and 1 that shows how similar the texts are
-    // assumes a is the larger word chain
     fn compare(&self, other: &WordChain) -> Option<f64> {
         if self.key_length != other.key_length {
             return None;
@@ -80,18 +79,18 @@ impl WordChain {
 
             let max_size: u64 = cmp::max(word_counts.values().sum(), word_counts_other.values().sum());
 
-            // Create a normailized sum so identical texts have a similarity of 1
+            // Create a normalized sum so identical texts have a similarity of 1
             result += (intersection_size as f64) / ((2 * max_size) as f64);
         }
 
-        // Create a normailized sum so identical texts have a similarity of 1
+        // Create a normalized sum so identical texts have a similarity of 1
         result = result / (intersection.len() as f64);
 
         return Some(result);
     }
 
     fn merge(&self, other: &WordChain) -> WordChain {
-        // creates a merged map from the two given references
+        // Creates a merged map from the two given WordChain references
         let mut new_word_map = HashMap::new();
         let word_maps = vec![&self.word_map, &other.word_map];
 
