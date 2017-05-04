@@ -122,7 +122,7 @@ fn main() {
         println!("author_identifier [text] [comparison text]");
         return;
     }
-    const KEY_LENGTH: usize = 3;
+    const KEY_LENGTH: usize = 2;
 
     let mut word_chains: Vec<WordChain> = Vec::new();
 
