@@ -1,3 +1,6 @@
+#![feature(alloc_system)]
+extern crate alloc_system;
+
 use std::io::BufReader;
 use std::io::prelude::*;
 use std::fs::File;
@@ -45,6 +48,14 @@ impl WordChain {
         }
 
         WordChain{ title: title, word_map: word_map, key_length: key_length}
+    }
+    fn from_path(title: String, path: &str, key_length: usize) -> WordChain {
+        let f = File::open(path).unwrap();
+        let mut f = BufReader::new(f);
+        let mut text = String::new();
+        f.read_to_string(&mut text).expect("Error reading file");
+
+        WordChain::new(title, text, key_length)
     }
 
     // Compare word chains
@@ -124,23 +135,14 @@ fn main() {
     }
     const KEY_LENGTH: usize = 2;
 
-    let mut word_chains: Vec<WordChain> = Vec::new();
+    let mut text_paths = env::args().skip(1);
 
-    for path in env::args().skip(1) {
-        let f = File::open(path.clone()).unwrap();
-        let mut f = BufReader::new(f);
-        let mut text = String::new();
-        f.read_to_string(&mut text).expect("Error reading file");
-        let word_chain = WordChain::new(path, text, KEY_LENGTH);
-
-        word_chains.push(word_chain);
-    }
-
-    //println!("{}", word_chains[0]);
-    let test_word_chain =  &word_chains[0];
-    println!("Comparisons for {}", test_word_chain.title);
-    for word_chain in word_chains.iter().skip(1) {
-        let sim = test_word_chain.compare(word_chain).expect("Unable to compare word chains");
+    let sample_path = text_paths.next().unwrap();
+    let sample_word_chain = WordChain::from_path(sample_path.clone(), &sample_path, KEY_LENGTH);
+    println!("Comparisons for {}", sample_word_chain.title);
+    for path in text_paths {
+        let word_chain = WordChain::from_path(path.clone(), &path, KEY_LENGTH);
+        let sim = sample_word_chain.compare(&word_chain).expect("Unable to compare word chains");
         println!("{}: {}", word_chain.title, sim);
     }
 }
