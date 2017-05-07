@@ -25,7 +25,7 @@ impl fmt::Display for WordChain {
                 return Err(x);
             }
         }
-        return Ok(());
+        Ok(())
     }
 }
 
@@ -38,13 +38,13 @@ impl WordChain {
 
         let mut word_map: WordMap = BTreeMap::new();
         for word in text_iter {
-            let mut word_count = word_map.entry(key_words.clone()).or_insert(BTreeMap::new());
+            let mut word_count = word_map.entry(key_words.clone()).or_insert_with(BTreeMap::new);
             (*(*word_count).entry(word.to_string()).or_insert(0)) += 1;
             key_words.pop_front();
             key_words.push_back(word.to_string());
         }
 
-        return WordChain{ title: title, word_map: word_map, key_length: key_length};
+        WordChain{ title: title, word_map: word_map, key_length: key_length}
     }
 
     // Compare word chains
@@ -67,8 +67,8 @@ impl WordChain {
         }
 
         for key in &intersection {
-            let word_counts: &BTreeMap<String, u64> = self.word_map.get(&key).unwrap();
-            let word_counts_other: &BTreeMap<String, u64> = other.word_map.get(&key).unwrap();
+            let word_counts: &BTreeMap<String, u64> = &self.word_map[key];
+            let word_counts_other: &BTreeMap<String, u64> = &other.word_map[key];
             let words: HashSet<_> = word_counts.keys().collect();
             let words_other: HashSet<_> = word_counts_other.keys().collect();
             let mut intersection_size = 0;
@@ -85,9 +85,9 @@ impl WordChain {
         }
 
         // Create a normalized sum so identical texts have a similarity of 1
-        result = result / (intersection.len() as f64);
+        result /= intersection.len() as f64;
 
-        return Some(result);
+        Some(result)
     }
 
     fn merge(&self, other: &WordChain) -> Option<WordChain> {
@@ -101,10 +101,10 @@ impl WordChain {
         for word_map in word_maps {
             for (key, word_counts) in word_map.clone() {
                 let mut new_word_count =
-                    new_word_map.entry(key).or_insert(BTreeMap::new());
+                    new_word_map.entry(key).or_insert_with(BTreeMap::new);
                 for word in word_counts.keys() {
                    (*new_word_count.entry(word.clone()).or_insert(0)) +=
-                       *word_counts.get(word).unwrap();
+                       word_counts[word];
                 }
             }
         }
@@ -112,7 +112,7 @@ impl WordChain {
     }
 
     fn len(&self) -> usize {
-        return self.word_map.len();
+        self.word_map.len()
     }
 }
 
